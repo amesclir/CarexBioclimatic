@@ -1,0 +1,389 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+
+Now we are going to work with BAMM
+
+```{r}
+library(BAMMtools)
+library(coda)
+
+##BIO1
+## load data
+mytreebio <- read.tree("./phenotypebio1/Bioclimatic.tree")
+mcmcoutbio1 <- read.csv("./phenotypebio1/mcmc_out.txt")
+
+
+#phenotype evolution
+
+## create edata
+phenobio1edata <- getEventData(mytreebio, eventdata = "./phenotypebio1/event_data.txt", burnin=0.15, type = "trait")
+
+
+#### Check convergence
+plot(mcmcoutbio1$logLik ~ mcmcoutbio1$generation)
+
+burnstartbio1 <- floor(0.15 * nrow(mcmcoutbio1))
+phenobio1postburn <- mcmcoutbio1[burnstartbio1:nrow(mcmcoutbio1), ]
+
+effectiveSize(phenobio1postburn$N_shifts)
+effectiveSize(phenobio1postburn$logLik)
+
+
+
+### Shift probabilities
+phenobio1shift_probs <- summary(phenobio1edata)
+phenobio1shift_probs
+write.csv(phenobio1shift_probs, file = "./phenotypebio1/phenobio1shift_probs.txt")
+
+### Bayes factors
+phenobio1bfmat <- computeBayesFactors(phenobio1postburn, expectedNumberOfShifts=10, burnin=0.15)
+phenobio1bfmat
+write.csv(phenobio1bfmat, file = "./phenotypebio1/phenobio1bfmat.txt")
+
+#### PLOT CREDIBLE SHIFTS
+phenobio1css <- credibleShiftSet(phenobio1edata, expectedNumberOfShifts=10, threshold=5, set.limit = 0.95)
+phenobio1css
+
+plot.credibleshiftset(phenobio1css)
+
+
+### PLOT BEST SHIFT
+dev.off()
+phenobio1best <- getBestShiftConfiguration(phenobio1edata, expectedNumberOfShifts=10)
+phenobio1best
+
+pdffn = paste0("phenobio1", ".best.pdf")
+pdf(file=pdffn, width=6, height=60)
+plot.bammdata(phenobio1best, lwd = 2,label=T,cex=0.5)
+axisPhylo()
+addBAMMshifts(phenobio1best, cex=3)
+dev.off()
+
+pdffn = paste0("pheno2bio1", ".best.pdf")
+pdf(file=pdffn, width=6, height=18)
+plot.bammdata(phenobio1best, lwd = 2,label=F,cex=0.5)
+axisPhylo()
+addBAMMshifts(phenobio1best, cex=3)
+dev.off()
+
+pdffn = paste0("pheno3bio1", ".best.pdf")
+pdf(file=pdffn, width=60, height=60)
+plot.bammdata(phenobio1best, method= "polar", lwd = 2,label=T,cex=0.5)
+axisPhylo()
+addBAMMshifts(phenobio1best, cex=3)
+dev.off()
+
+phenobio1best$eventData
+write.csv(phenobio1best$eventData, file ="./phenotypebio1/phenobio1best.txt")
+bio1MarginalBranchRateMatrix <- getMarginalBranchRateMatrix(phenobio1best)
+
+
+##BIO4
+## load data
+mytreebio <- read.tree("./phenotypebio4/Bioclimatic.tree")
+mcmcoutbio4 <- read.csv("./phenotypebio4/mcmc_out.txt")
+
+
+#phenotype evolution
+
+## create edata
+phenobio4edata <- getEventData(mytreebio, eventdata = "./phenotypebio4/event_data.txt", burnin=0.15, type = "trait")
+
+
+#### Check convergence
+plot(mcmcoutbio4$logLik ~ mcmcoutbio4$generation)
+
+burnstartbio4 <- floor(0.15 * nrow(mcmcoutbio4))
+phenobio4postburn <- mcmcoutbio4[burnstartbio4:nrow(mcmcoutbio4), ]
+
+effectiveSize(phenobio4postburn$N_shifts)
+effectiveSize(phenobio4postburn$logLik)
+
+
+
+### Shift probabilities
+phenobio4shift_probs <- summary(phenobio4edata)
+phenobio4shift_probs
+write.csv(phenobio4shift_probs, file = "./phenotypebio4/phenobio4shift_probs.txt")
+
+### Bayes factors
+phenobio4bfmat <- computeBayesFactors(phenobio4postburn, expectedNumberOfShifts=10, burnin=0.15)
+phenobio4bfmat
+write.csv(phenobio4bfmat, file = "./phenotypebio4/phenobio4bfmat.txt")
+
+#### PLOT CREDIBLE SHIFTS
+phenobio4css <- credibleShiftSet(phenobio4edata, expectedNumberOfShifts=10, threshold=5, set.limit = 0.95)
+phenobio4css
+
+plot.credibleshiftset(phenobio4css)
+
+
+### PLOT BEST SHIFT
+dev.off()
+phenobio4best <- getBestShiftConfiguration(phenobio4edata, expectedNumberOfShifts=10)
+phenobio4best
+
+pdffn = paste0("phenobio4", ".best.pdf")
+pdf(file=pdffn, width=6, height=60)
+plot.bammdata(phenobio4best, lwd = 2,label=T,cex=0.5)
+axisPhylo()
+addBAMMshifts(phenobio4best, cex=3)
+dev.off()
+
+pdffn = paste0("pheno2bio4", ".best.pdf")
+pdf(file=pdffn, width=6, height=18)
+plot.bammdata(phenobio4best, lwd = 2,label=F,cex=0.5)
+axisPhylo()
+addBAMMshifts(phenobio4best, cex=3)
+dev.off()
+
+pdffn = paste0("pheno3bio4", ".best.pdf")
+pdf(file=pdffn, width=60, height=60)
+plot.bammdata(phenobio4best, method= "polar", lwd = 2,label=T,cex=0.5)
+axisPhylo()
+addBAMMshifts(phenobio4best, cex=3)
+dev.off()
+
+phenobio4best$eventData
+write.csv(phenobio4best$eventData, file ="./phenotypebio4/phenobio4best.txt")
+bio4MarginalBranchRateMatrix <- getMarginalBranchRateMatrix(phenobio4best)
+
+
+##BIO7
+## load data
+mytreebio <- read.tree("./phenotypebio7/Bioclimatic.tree")
+mcmcoutbio7 <- read.csv("./phenotypebio7/mcmc_out.txt")
+
+
+#phenotype evolution
+
+## create edata
+phenobio7edata <- getEventData(mytreebio, eventdata = "./phenotypebio7/event_data.txt", burnin=0.15, type = "trait")
+
+
+#### Check convergence
+plot(mcmcoutbio7$logLik ~ mcmcoutbio7$generation)
+
+burnstartbio7 <- floor(0.15 * nrow(mcmcoutbio7))
+phenobio7postburn <- mcmcoutbio7[burnstartbio7:nrow(mcmcoutbio7), ]
+
+effectiveSize(phenobio7postburn$N_shifts)
+effectiveSize(phenobio7postburn$logLik)
+
+
+
+### Shift probabilities
+phenobio7shift_probs <- summary(phenobio7edata)
+phenobio7shift_probs
+write.csv(phenobio7shift_probs, file = "./phenotypebio7/phenobio7shift_probs.txt")
+
+### Bayes factors
+phenobio7bfmat <- computeBayesFactors(phenobio7postburn, expectedNumberOfShifts=10, burnin=0.15)
+phenobio7bfmat
+write.csv(phenobio7bfmat, file = "./phenotypebio7/phenobio7bfmat.txt")
+
+#### PLOT CREDIBLE SHIFTS
+phenobio7css <- credibleShiftSet(phenobio7edata, expectedNumberOfShifts=10, threshold=5, set.limit = 0.95)
+phenobio7css
+
+plot.credibleshiftset(phenobio7css)
+
+
+### PLOT BEST SHIFT
+dev.off()
+phenobio7best <- getBestShiftConfiguration(phenobio7edata, expectedNumberOfShifts=10)
+phenobio7best
+
+pdffn = paste0("phenobio7", ".best.pdf")
+pdf(file=pdffn, width=6, height=60)
+plot.bammdata(phenobio7best, lwd = 2,label=T,cex=0.5)
+axisPhylo()
+addBAMMshifts(phenobio7best, cex=3)
+dev.off()
+
+pdffn = paste0("pheno2bio7", ".best.pdf")
+pdf(file=pdffn, width=6, height=18)
+plot.bammdata(phenobio7best, lwd = 2,label=F,cex=0.5)
+axisPhylo()
+addBAMMshifts(phenobio7best, cex=3)
+dev.off()
+
+pdffn = paste0("pheno3bio7", ".best.pdf")
+pdf(file=pdffn, width=60, height=60)
+plot.bammdata(phenobio7best, method= "polar", lwd = 2,label=T,cex=0.5)
+axisPhylo()
+addBAMMshifts(phenobio7best, cex=3)
+dev.off()
+
+phenobio7best$eventData
+write.csv(phenobio7best$eventData, file ="./phenotypebio7/phenobio7best.txt")
+bio7MarginalBranchRateMatrix <- getMarginalBranchRateMatrix(phenobio7best)
+
+
+
+##BIO12
+## load data
+mytreebio <- read.tree("./phenotypebio12/Bioclimatic.tree")
+mcmcoutbio12 <- read.csv("./phenotypebio12/mcmc_out.txt")
+
+
+#phenotype evolution
+
+## create edata
+phenobio12edata <- getEventData(mytreebio, eventdata = "./phenotypebio12/event_data.txt", burnin=0.15, type = "trait")
+
+
+#### Check convergence
+plot(mcmcoutbio12$logLik ~ mcmcoutbio12$generation)
+
+burnstartbio12 <- floor(0.15 * nrow(mcmcoutbio12))
+phenobio12postburn <- mcmcoutbio12[burnstartbio12:nrow(mcmcoutbio12), ]
+
+effectiveSize(phenobio12postburn$N_shifts)
+effectiveSize(phenobio12postburn$logLik)
+
+
+
+### Shift probabilities
+phenobio12shift_probs <- summary(phenobio12edata)
+phenobio12shift_probs
+write.csv(phenobio12shift_probs, file = "./phenotypebio12/phenobio12shift_probs.txt")
+
+### Bayes factors
+phenobio12bfmat <- computeBayesFactors(phenobio12postburn, expectedNumberOfShifts=10, burnin=0.15)
+phenobio12bfmat
+write.csv(phenobio12bfmat, file = "./phenotypebio12/phenobio12bfmat.txt")
+
+#### PLOT CREDIBLE SHIFTS
+phenobio12css <- credibleShiftSet(phenobio12edata, expectedNumberOfShifts=10, threshold=5, set.limit = 0.95)
+phenobio12css
+
+plot.credibleshiftset(phenobio12css)
+
+
+### PLOT BEST SHIFT
+dev.off()
+phenobio12best <- getBestShiftConfiguration(phenobio12edata, expectedNumberOfShifts=10)
+phenobio12best
+
+pdffn = paste0("phenobio12", ".best.pdf")
+pdf(file=pdffn, width=6, height=60)
+plot.bammdata(phenobio12best, lwd = 2,label=T,cex=0.5)
+axisPhylo()
+addBAMMshifts(phenobio12best, cex=3)
+dev.off()
+
+pdffn = paste0("pheno2bio12", ".best.pdf")
+pdf(file=pdffn, width=6, height=18)
+plot.bammdata(phenobio12best, lwd = 2,label=F,cex=0.5)
+axisPhylo()
+addBAMMshifts(phenobio12best, cex=3)
+dev.off()
+
+pdffn = paste0("pheno3bio12", ".best.pdf")
+pdf(file=pdffn, width=60, height=60)
+plot.bammdata(phenobio12best, method= "polar", lwd = 2,label=T,cex=0.5)
+axisPhylo()
+addBAMMshifts(phenobio12best, cex=3)
+dev.off()
+
+phenobio12best$eventData
+write.csv(phenobio12best$eventData, file ="./phenotypebio12/phenobio12best.txt")
+bio12MarginalBranchRateMatrix <- getMarginalBranchRateMatrix(phenobio12best)
+
+
+
+##BIO2n
+## load data
+mytreebio <- read.tree("./phenotypebio2n/Bioclimatic.tree")
+mcmcoutbio2n <- read.csv("./phenotypebio2n/mcmc_out.txt")
+
+
+#phenotype evolution
+
+## create edata
+phenobio2nedata <- getEventData(mytreebio, eventdata = "./phenotypebio2n/event_data.txt", burnin=0.15, type = "trait")
+
+
+#### Check convergence
+plot(mcmcoutbio2n$logLik ~ mcmcoutbio2n$generation)
+
+burnstartbio2n <- floor(0.15 * nrow(mcmcoutbio2n))
+phenobio2npostburn <- mcmcoutbio2n[burnstartbio2n:nrow(mcmcoutbio2n), ]
+
+effectiveSize(phenobio2npostburn$N_shifts)
+effectiveSize(phenobio2npostburn$logLik)
+
+
+
+### Shift probabilities
+phenobio2nshift_probs <- summary(phenobio2nedata)
+phenobio2nshift_probs
+write.csv(phenobio2nshift_probs, file = "./phenotypebio2n/phenobio2nshift_probs.txt")
+
+### Bayes factors
+phenobio2nbfmat <- computeBayesFactors(phenobio2npostburn, expectedNumberOfShifts=10, burnin=0.15)
+phenobio2nbfmat
+write.csv(phenobio2nbfmat, file = "./phenotypebio2n/phenobio2nbfmat.txt")
+
+#### PLOT CREDIBLE SHIFTS
+phenobio2ncss <- credibleShiftSet(phenobio2nedata, expectedNumberOfShifts=10, threshold=5, set.limit = 0.95)
+phenobio2ncss
+
+plot.credibleshiftset(phenobio2ncss)
+
+
+### PLOT BEST SHIFT
+dev.off()
+phenobio2nbest <- getBestShiftConfiguration(phenobio2nedata, expectedNumberOfShifts=10)
+phenobio2nbest
+
+pdffn = paste0("phenobio2n", ".best.pdf")
+pdf(file=pdffn, width=6, height=60)
+plot.bammdata(phenobio2nbest, lwd = 2,label=T,cex=0.5)
+axisPhylo()
+addBAMMshifts(phenobio2nbest, cex=3)
+dev.off()
+
+pdffn = paste0("pheno2bio2n", ".best.pdf")
+pdf(file=pdffn, width=6, height=18)
+plot.bammdata(phenobio2nbest, lwd = 2,label=F,cex=0.5)
+axisPhylo()
+addBAMMshifts(phenobio2nbest, cex=3)
+dev.off()
+
+pdffn = paste0("pheno3bio2n", ".best.pdf")
+pdf(file=pdffn, width=60, height=60)
+plot.bammdata(phenobio2nbest, method= "polar", lwd = 2,label=T,cex=0.5)
+axisPhylo()
+addBAMMshifts(phenobio2nbest, cex=3)
+dev.off()
+
+phenobio2nbest$eventData
+write.csv(phenobio2nbest$eventData, file ="./phenotypebio2n/phenobio2nbest.txt")
+bio2nMarginalBranchRateMatrix <- getMarginalBranchRateMatrix(phenobio2nbest)
+
+biobranch_matrix <- cbind (bio2nMarginalBranchRateMatrix$beta_branch_matrix, bio1MarginalBranchRateMatrix$beta_branch_matrix, bio4MarginalBranchRateMatrix$beta_branch_matrix, bio7MarginalBranchRateMatrix$beta_branch_matrix, bio12MarginalBranchRateMatrix$beta_branch_matrix)
+biobranch_matrix
+colnames(biobranch_matrix) <- c("bio2n", "bio1", "bio4", "bio7", "bio12")
+write.csv(biobranch_matrix, file="biobranch_matrix.csv")
+biobranch_matrix <- read.csv(file= "biobranch_matrix.csv")
+
+library(lmPerm)
+names(biobranch_matrix)
+dim(biobranch_matrix)
+class(biobranch_matrix)
+biobranch_matrix <- biobranch_matrix[,2:6]
+
+summary(lmp(bio2n~bio1,data=biobranch_matrix, perm="Exact"))
+summary(lmp(bio2n~bio4,data=biobranch_matrix, perm="Exact"))
+summary(lmp(bio2n~bio7,data=biobranch_matrix, perm="Exact"))
+summary(lmp(bio2n~bio12,data=biobranch_matrix, perm="Exact"))
+
+```
+
+
