@@ -384,6 +384,11 @@ summary(lmp(bio2n~bio4,data=biobranch_matrix, perm="Exact"))
 summary(lmp(bio2n~bio7,data=biobranch_matrix, perm="Exact"))
 summary(lmp(bio2n~bio12,data=biobranch_matrix, perm="Exact"))
 
+
+
+PPAbio <- cbind(mytreebio$tip.label, phenobio1best$tipLambda[[1]],phenobio4best$tipLambda[[1]],phenobio7best$tipLambda[[1]],phenobio12best$tipLambda[[1]])
+write.csv(PPAbio, file = "PPAbio.csv")
+
 ```
 
 
